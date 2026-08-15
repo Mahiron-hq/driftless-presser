@@ -1,0 +1,42 @@
+[package]
+name = "auto_clicker"
+version = "0.1.0"
+edition = "2021"
+description = "Lightweight, configurable auto-clicker with global hotkeys and system tray integration."
+
+[[bin]]
+name = "auto_clicker"
+path = "src/main.rs"
+
+[lib]
+name = "auto_clicker"
+path = "src/lib.rs"
+
+# Platform-independent: config parsing/validation and the click-scheduling
+# math. These compile and are unit tested on any host.
+[dependencies]
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.150"
+fastrand = "2.4.1"
+sys-locale = "0.3.2"
+
+# Windows-only: the GUI, tray icon, and low-level input hook glue. Scoped to
+# a target-specific table (rather than plain [dependencies]) so Cargo never
+# even tries to resolve/build these off-Windows -- matching the fact that
+# hook.rs and gui.rs are themselves behind #[cfg(windows)] in lib.rs. This
+# also keeps `cargo test --lib` on non-Windows hosts fast, since it never
+# has to touch the GUI/rendering stack to test the platform-independent
+# core.
+[target.'cfg(windows)'.dependencies]
+native-windows-gui = { version = "1.0.13", default-features = false, features = ["menu", "tray-notification", "textbox", "cursor", "animation-timer"] }
+winapi = { version = "0.3.9", features = ["winuser", "processthreadsapi", "libloaderapi", "minwindef", "windef", "errhandlingapi", "winreg", "winnt", "dwmapi"] }
+
+# --- Optimization profile: small, fast release binary ---
+[profile.release]
+opt-level = 3       # maximum runtime speed
+lto = true           # link-time optimization across the whole dependency graph
+codegen-units = 1    # trade compile time for better cross-function optimization
+panic = "abort"      # skip unwinding tables -- smaller binary; this app has no
+                      # catch_unwind boundaries to preserve, so there's nothing
+                      # unwinding would buy us
+strip = true          # strip symbols/debuginfo from the final executable
