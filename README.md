@@ -220,5 +220,5 @@ Apache License 2.0 — see [LICENSE](LICENSE).
 ---
 
 <div align="center">
-<sub>Copyright © 2026 Lev Burmistrov (Mahiron)</sub>
+<sub>Copyright © 2026 Lev Burmistrov (Mahiron-hq)</sub>
 </div>
