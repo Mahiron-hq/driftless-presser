@@ -12,7 +12,6 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6?style=flat-square&logo=windows&logoColor=white)](#)
 [![Rust](https://img.shields.io/badge/rust-2021%20edition-000000?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org/)
-[![Size](https://img.shields.io/badge/single%20file-no%20installer-lightgrey?style=flat-square)](#)
 
 ### [⬇️ Скачать / Download](https://github.com/Mahiron-hq/driftless-presser/releases/latest)
 
