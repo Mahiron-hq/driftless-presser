@@ -66,15 +66,18 @@ impl AppUi {
     /// theme change made while the app was in the tray takes effect.
     fn apply_current_theme(&self) {
         if let Some(hwnd) = self.window.handle.hwnd() {
-            ThemeMode::detect().apply_to_title_bar(hwnd);
+            // SAFETY: `hwnd` was just read from the live `self.window`, which this process owns.
+            unsafe { ThemeMode::detect().apply_to_title_bar(hwnd) };
         }
     }
 
     fn populate_fields_from_config(&self) {
         let cfg = self.config.borrow();
         self.target_key_button.set_text(&cfg.target_key);
-        self.default_freq_input.set_text(&format!("{}", cfg.default_frequency_hz));
-        self.rmb_freq_input.set_text(&format!("{}", cfg.rmb_frequency_hz));
+        self.default_freq_input
+            .set_text(&format!("{}", cfg.default_frequency_hz));
+        self.rmb_freq_input
+            .set_text(&format!("{}", cfg.rmb_frequency_hz));
         self.hotkey_button.set_text(&cfg.hotkey.join("+"));
         self.error_label.set_text("");
     }
@@ -126,8 +129,11 @@ impl AppUi {
         let target_key_raw = self.target_key_button.text();
         let target_key = target_key_raw.trim().to_ascii_uppercase();
         if config::vk::from_name(&target_key).is_none() {
-            self.error_label
-                .set_text(&format!("'{}' {}", target_key_raw.trim(), self.strings.err_target_key_unknown));
+            self.error_label.set_text(&format!(
+                "'{}' {}",
+                target_key_raw.trim(),
+                self.strings.err_target_key_unknown
+            ));
             return;
         }
 
@@ -151,7 +157,8 @@ impl AppUi {
         let hotkey = match config::validate_hotkey(&hotkey_tokens) {
             Ok(keys) => keys,
             Err(e) => {
-                self.error_label.set_text(&translate_hotkey_error(&e, self.strings));
+                self.error_label
+                    .set_text(&translate_hotkey_error(&e, self.strings));
                 return;
             }
         };
@@ -164,13 +171,19 @@ impl AppUi {
         };
 
         if let Err(e) = new_config.save() {
-            self.error_label.set_text(&format!("{} {e}", self.strings.err_save_failed));
+            self.error_label
+                .set_text(&format!("{} {e}", self.strings.err_save_failed));
             return;
         }
 
-        let hotkey_vks: Vec<u16> = hotkey.iter().filter_map(|k| config::vk::from_name(k)).collect();
+        let hotkey_vks: Vec<u16> = hotkey
+            .iter()
+            .filter_map(|k| config::vk::from_name(k))
+            .collect();
         *self.state.hotkey_vks.lock().unwrap() = hotkey_vks;
-        let _ = self.clicker_tx.send(ClickerCommand::ConfigUpdated(new_config.clone()));
+        let _ = self
+            .clicker_tx
+            .send(ClickerCommand::ConfigUpdated(new_config.clone()));
         *self.config.borrow_mut() = new_config;
 
         self.hide_and_show_tray();
@@ -191,7 +204,11 @@ impl AppUi {
                 FieldId::Hotkey => self.strings.record_prompt_combo.to_string(),
             }
         } else {
-            snapshot.iter().map(|&vk| config::vk::name_for(vk)).collect::<Vec<_>>().join("+")
+            snapshot
+                .iter()
+                .map(|&vk| config::vk::name_for(vk))
+                .collect::<Vec<_>>()
+                .join("+")
         };
 
         match field {
@@ -247,11 +264,15 @@ fn write_icon_to_temp_file() -> Option<std::path::PathBuf> {
 
 fn centered_position(size: (i32, i32)) -> (i32, i32) {
     use winapi::um::winuser::{GetSystemMetrics, SM_CXSCREEN, SM_CYSCREEN};
-    let (screen_w, screen_h) = unsafe { (GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)) };
+    let (screen_w, screen_h) =
+        unsafe { (GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)) };
     if screen_w <= 0 || screen_h <= 0 {
         return (200, 150);
     }
-    (((screen_w - size.0) / 2).max(0), ((screen_h - size.1) / 2).max(0))
+    (
+        ((screen_w - size.0) / 2).max(0),
+        ((screen_h - size.1) / 2).max(0),
+    )
 }
 
 fn build_ui(
@@ -288,7 +309,10 @@ fn build_ui(
 
     let icon_path = write_icon_to_temp_file();
     let icon_path_str = icon_path.as_deref().and_then(|p| p.to_str());
-    nwg::Icon::builder().source_file(icon_path_str).strict(false).build(&mut ui.icon)?;
+    nwg::Icon::builder()
+        .source_file(icon_path_str)
+        .strict(false)
+        .build(&mut ui.icon)?;
 
     let size = (440, 380);
     let position = centered_position(size);
@@ -303,33 +327,51 @@ fn build_ui(
 
     ui.apply_current_theme();
 
-    nwg::Label::builder().text(strings.target_key_label).parent(&ui.window).build(&mut ui.target_key_label)?;
+    nwg::Label::builder()
+        .text(strings.target_key_label)
+        .parent(&ui.window)
+        .build(&mut ui.target_key_label)?;
     nwg::Button::builder()
         .text(&ui.config.borrow().target_key.clone())
         .parent(&ui.window)
         .build(&mut ui.target_key_button)?;
 
-    nwg::Label::builder().text(strings.default_freq_label).parent(&ui.window).build(&mut ui.default_freq_label)?;
+    nwg::Label::builder()
+        .text(strings.default_freq_label)
+        .parent(&ui.window)
+        .build(&mut ui.default_freq_label)?;
     nwg::TextInput::builder()
         .text(&format!("{}", ui.config.borrow().default_frequency_hz))
         .parent(&ui.window)
         .build(&mut ui.default_freq_input)?;
 
-    nwg::Label::builder().text(strings.rmb_freq_label).parent(&ui.window).build(&mut ui.rmb_freq_label)?;
+    nwg::Label::builder()
+        .text(strings.rmb_freq_label)
+        .parent(&ui.window)
+        .build(&mut ui.rmb_freq_label)?;
     nwg::TextInput::builder()
         .text(&format!("{}", ui.config.borrow().rmb_frequency_hz))
         .parent(&ui.window)
         .build(&mut ui.rmb_freq_input)?;
 
-    nwg::Label::builder().text(strings.hotkey_label).parent(&ui.window).build(&mut ui.hotkey_label)?;
+    nwg::Label::builder()
+        .text(strings.hotkey_label)
+        .parent(&ui.window)
+        .build(&mut ui.hotkey_label)?;
     nwg::Button::builder()
         .text(&ui.config.borrow().hotkey.join("+"))
         .parent(&ui.window)
         .build(&mut ui.hotkey_button)?;
 
-    nwg::Label::builder().text("").parent(&ui.window).build(&mut ui.error_label)?;
+    nwg::Label::builder()
+        .text("")
+        .parent(&ui.window)
+        .build(&mut ui.error_label)?;
 
-    nwg::Button::builder().text(strings.start_button).parent(&ui.window).build(&mut ui.start_button)?;
+    nwg::Button::builder()
+        .text(strings.start_button)
+        .parent(&ui.window)
+        .build(&mut ui.start_button)?;
 
     nwg::GridLayout::builder()
         .parent(&ui.window)
@@ -347,9 +389,18 @@ fn build_ui(
         .child(1, 5, &ui.start_button)
         .build(&ui.layout)?;
 
-    nwg::Menu::builder().popup(true).parent(&ui.window).build(&mut ui.tray_menu)?;
-    nwg::MenuItem::builder().text(strings.tray_open_settings).parent(&ui.tray_menu).build(&mut ui.tray_open_item)?;
-    nwg::MenuItem::builder().text(strings.tray_exit).parent(&ui.tray_menu).build(&mut ui.tray_exit_item)?;
+    nwg::Menu::builder()
+        .popup(true)
+        .parent(&ui.window)
+        .build(&mut ui.tray_menu)?;
+    nwg::MenuItem::builder()
+        .text(strings.tray_open_settings)
+        .parent(&ui.tray_menu)
+        .build(&mut ui.tray_open_item)?;
+    nwg::MenuItem::builder()
+        .text(strings.tray_exit)
+        .parent(&ui.tray_menu)
+        .build(&mut ui.tray_exit_item)?;
 
     nwg::AnimationTimer::builder()
         .parent(&ui.window)
@@ -364,16 +415,16 @@ fn build_ui(
         if let Some(ui) = evt_ui.upgrade() {
             match evt {
                 E::OnButtonClick => {
-                    if &handle == &ui.start_button {
+                    if handle == ui.start_button {
                         ui.on_start();
-                    } else if &handle == &ui.target_key_button {
+                    } else if handle == ui.target_key_button {
                         ui.toggle_recording(FieldId::TargetKey, RecordTarget::SingleKey);
                         if ui.recording.borrow().is_some() {
                             ui.recording_timer.start();
                         } else {
                             ui.recording_timer.stop();
                         }
-                    } else if &handle == &ui.hotkey_button {
+                    } else if handle == ui.hotkey_button {
                         ui.toggle_recording(FieldId::Hotkey, RecordTarget::Combo);
                         if ui.recording.borrow().is_some() {
                             ui.recording_timer.start();
@@ -382,27 +433,25 @@ fn build_ui(
                         }
                     }
                 }
-                E::OnWindowClose => {
-                    if &handle == &ui.window {
-                        // Without this, nwg's default handling destroys the
-                        // window after this returns, making it permanently
-                        // unusable the next time Open Settings shows it.
-                        if let nwg::EventData::OnWindowClose(close_data) = &evt_data {
-                            close_data.close(false);
-                        }
-                        ui.hide_and_show_tray();
+                E::OnWindowClose if handle == ui.window => {
+                    // Without this, nwg's default handling destroys the
+                    // window after this returns, making it permanently
+                    // unusable the next time Open Settings shows it.
+                    if let nwg::EventData::OnWindowClose(close_data) = &evt_data {
+                        close_data.close(false);
                     }
+                    ui.hide_and_show_tray();
                 }
                 E::OnMousePress(nwg::MousePressEvent::MousePressLeftUp) | E::OnContextMenu => {
-                    let is_tray = ui.tray.borrow().as_ref().map_or(false, |t| &handle == &*t);
+                    let is_tray = ui.tray.borrow().as_ref().is_some_and(|t| handle == *t);
                     if is_tray {
                         ui.show_tray_menu();
                     }
                 }
                 E::OnMenuItemSelected => {
-                    if &handle == &ui.tray_open_item {
+                    if handle == ui.tray_open_item {
                         ui.on_open_settings();
-                    } else if &handle == &ui.tray_exit_item {
+                    } else if handle == ui.tray_exit_item {
                         // Every thread and handle this app owns is torn
                         // down atomically by the OS on process exit, so
                         // exiting directly here needs no further
@@ -410,10 +459,8 @@ fn build_ui(
                         std::process::exit(0);
                     }
                 }
-                E::OnTimerTick => {
-                    if &handle == &ui.recording_timer {
-                        ui.poll_recording();
-                    }
+                E::OnTimerTick if handle == ui.recording_timer => {
+                    ui.poll_recording();
                 }
                 _ => {}
             }

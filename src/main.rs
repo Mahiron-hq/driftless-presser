@@ -24,13 +24,19 @@ fn main() {
     // panic through a real dialog instead. Still fires under panic=abort:
     // the hook always runs before the abort happens.
     std::panic::set_hook(Box::new(|info| {
-        auto_clicker::fatal_error(&format!("The application hit an unexpected error and needs to close:\n\n{info}"));
+        auto_clicker::fatal_error(&format!(
+            "The application hit an unexpected error and needs to close:\n\n{info}"
+        ));
     }));
 
     let config = Config::load_or_init();
     let strings = Lang::detect().strings();
 
-    let hotkey_vks: Vec<u16> = config.hotkey.iter().filter_map(|k| vk::from_name(k)).collect();
+    let hotkey_vks: Vec<u16> = config
+        .hotkey
+        .iter()
+        .filter_map(|k| vk::from_name(k))
+        .collect();
     let state = Arc::new(InputState::new(hotkey_vks));
 
     let (clicker_tx, clicker_rx) = mpsc::channel::<ClickerCommand>();

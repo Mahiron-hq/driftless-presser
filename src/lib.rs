@@ -29,7 +29,10 @@ pub fn fatal_error(message: &str) {
     use winapi::um::winuser::{MessageBoxW, MB_ICONERROR, MB_OK};
 
     let wide_msg: Vec<u16> = OsStr::new(message).encode_wide().chain(once(0)).collect();
-    let wide_title: Vec<u16> = OsStr::new("Auto-Clicker - Error").encode_wide().chain(once(0)).collect();
+    let wide_title: Vec<u16> = OsStr::new("Auto-Clicker - Error")
+        .encode_wide()
+        .chain(once(0))
+        .collect();
     unsafe {
         MessageBoxW(
             std::ptr::null_mut(),

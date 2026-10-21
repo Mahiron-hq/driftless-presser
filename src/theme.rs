@@ -36,7 +36,11 @@ impl ThemeMode {
     /// Applies this mode to a window's title bar via
     /// `DwmSetWindowAttribute`. Best-effort: failure (e.g. no DWM
     /// composition) just leaves the title bar unthemed.
-    pub fn apply_to_title_bar(self, hwnd: HWND) {
+    ///
+    /// # Safety
+    ///
+    /// `hwnd` must be a valid window handle owned by the calling process.
+    pub unsafe fn apply_to_title_bar(self, hwnd: HWND) {
         // Numbered 20 on Windows 10 2004+ and Windows 11, but 19 on earlier
         // Windows 10 -- try 20 first, fall back to 19, rather than parsing
         // the OS build number.
@@ -69,7 +73,10 @@ impl ThemeMode {
 
 fn to_wide(s: &str) -> Vec<u16> {
     use std::os::windows::ffi::OsStrExt;
-    std::ffi::OsStr::new(s).encode_wide().chain(std::iter::once(0)).collect()
+    std::ffi::OsStr::new(s)
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect()
 }
 
 fn read_apps_use_light_theme() -> Option<DWORD> {

@@ -115,14 +115,22 @@ mod tests {
     #[test]
     fn russian_locale_variants_all_select_russian() {
         for locale in ["ru", "ru-RU", "ru_RU.UTF-8", "RU", "ru-UA"] {
-            assert_eq!(Lang::from_locale_str(locale), Lang::Ru, "failed for {locale}");
+            assert_eq!(
+                Lang::from_locale_str(locale),
+                Lang::Ru,
+                "failed for {locale}"
+            );
         }
     }
 
     #[test]
     fn everything_else_defaults_to_english() {
         for locale in ["en", "en-US", "de-DE", "fr_FR", "uk-UA", "", "zh-Hans-CN"] {
-            assert_eq!(Lang::from_locale_str(locale), Lang::En, "failed for {locale}");
+            assert_eq!(
+                Lang::from_locale_str(locale),
+                Lang::En,
+                "failed for {locale}"
+            );
         }
     }
 

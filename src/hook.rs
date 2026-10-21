@@ -114,7 +114,7 @@ struct HookContext {
 }
 
 thread_local! {
-    static CTX: RefCell<Option<HookContext>> = RefCell::new(None);
+    static CTX: RefCell<Option<HookContext>> = const { RefCell::new(None) };
 }
 
 /// Ctrl/Shift/Alt/Win match loosely: configuring "Ctrl" is satisfied by
@@ -179,8 +179,8 @@ unsafe extern "system" fn keyboard_proc(code: i32, wparam: WPARAM, lparam: LPARA
                         RecordTarget::Combo => {
                             if is_up {
                                 let captured = ctx.state.recording.captured_keys.lock().unwrap();
-                                let all_released =
-                                    !captured.is_empty() && captured.iter().all(|&k| !ctx.keys_down[k as usize]);
+                                let all_released = !captured.is_empty()
+                                    && captured.iter().all(|&k| !ctx.keys_down[k as usize]);
                                 if all_released {
                                     ctx.state.recording.done.store(true, Ordering::Relaxed);
                                 }
@@ -210,7 +210,9 @@ unsafe extern "system" fn mouse_proc(code: i32, wparam: WPARAM, lparam: LPARAM) 
             // synthesizes mouse input.
             CTX.with(|c| {
                 if let Some(ctx) = c.borrow().as_ref() {
-                    ctx.state.rmb_down.store(msg == WM_RBUTTONDOWN, Ordering::Relaxed);
+                    ctx.state
+                        .rmb_down
+                        .store(msg == WM_RBUTTONDOWN, Ordering::Relaxed);
                     // Wakes the clicker thread so the speed change is
                     // instant rather than waiting out the current sleep.
                     let _ = ctx.clicker_tx.send(ClickerCommand::Recheck);

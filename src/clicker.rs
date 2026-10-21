@@ -152,10 +152,17 @@ mod tests {
         let now = start + Duration::from_secs(10);
         let sleep = sched.tick(now, Duration::ZERO);
 
-        assert_eq!(sleep, Duration::ZERO, "expected an immediate resync, got {sleep:?}");
+        assert_eq!(
+            sleep,
+            Duration::ZERO,
+            "expected an immediate resync, got {sleep:?}"
+        );
 
         let sleep2 = sched.tick(now, Duration::ZERO);
-        assert_eq!(sleep2, base, "cadence should be normal again immediately after resync");
+        assert_eq!(
+            sleep2, base,
+            "cadence should be normal again immediately after resync"
+        );
     }
 
     #[test]
@@ -167,7 +174,10 @@ mod tests {
         let now = start + Duration::from_secs(10);
         let jitter = Duration::from_millis(15);
         let sleep = sched.tick(now, jitter);
-        assert_eq!(sleep, jitter, "resync target is `now`, so the sleep is exactly the jitter");
+        assert_eq!(
+            sleep, jitter,
+            "resync target is `now`, so the sleep is exactly the jitter"
+        );
 
         let fire_time = now + sleep;
         let sleep2 = sched.tick(fire_time, Duration::ZERO);
@@ -254,8 +264,8 @@ pub mod windows_impl {
     use std::thread;
     use std::time::{Duration, Instant};
     use winapi::um::winuser::{
-        MapVirtualKeyW, SendInput, INPUT, INPUT_KEYBOARD, INPUT_u, KEYBDINPUT,
-        KEYEVENTF_KEYUP, KEYEVENTF_SCANCODE, MAPVK_VK_TO_VSC,
+        INPUT_u, MapVirtualKeyW, SendInput, INPUT, INPUT_KEYBOARD, KEYBDINPUT, KEYEVENTF_KEYUP,
+        KEYEVENTF_SCANCODE, MAPVK_VK_TO_VSC,
     };
 
     /// Sent by the hook thread (and the GUI thread, for live edits) to the
@@ -298,8 +308,15 @@ pub mod windows_impl {
                 time: 0,
                 dwExtraInfo: SYNTHETIC_MARKER,
             };
-            let mut down = INPUT { type_: INPUT_KEYBOARD, u: down_union };
-            SendInput(1, &mut down as *mut INPUT, std::mem::size_of::<INPUT>() as i32);
+            let mut down = INPUT {
+                type_: INPUT_KEYBOARD,
+                u: down_union,
+            };
+            SendInput(
+                1,
+                &mut down as *mut INPUT,
+                std::mem::size_of::<INPUT>() as i32,
+            );
 
             thread::sleep(KEY_HOLD_DURATION);
 
@@ -311,8 +328,15 @@ pub mod windows_impl {
                 time: 0,
                 dwExtraInfo: SYNTHETIC_MARKER,
             };
-            let mut up = INPUT { type_: INPUT_KEYBOARD, u: up_union };
-            SendInput(1, &mut up as *mut INPUT, std::mem::size_of::<INPUT>() as i32);
+            let mut up = INPUT {
+                type_: INPUT_KEYBOARD,
+                u: up_union,
+            };
+            SendInput(
+                1,
+                &mut up as *mut INPUT,
+                std::mem::size_of::<INPUT>() as i32,
+            );
         }
     }
 
@@ -338,10 +362,19 @@ pub mod windows_impl {
                     Ok(ClickerCommand::ToggleActive) => {
                         active = true;
                         state.active.store(true, Ordering::Relaxed);
-                        scheduler = ClickScheduler::new(Instant::now(), current_interval(&state, default_interval, rmb_interval));
+                        scheduler = ClickScheduler::new(
+                            Instant::now(),
+                            current_interval(&state, default_interval, rmb_interval),
+                        );
                     }
                     Ok(ClickerCommand::ConfigUpdated(new_cfg)) => {
-                        apply_config(&new_cfg, &mut config, &mut target_vk, &mut default_interval, &mut rmb_interval);
+                        apply_config(
+                            &new_cfg,
+                            &mut config,
+                            &mut target_vk,
+                            &mut default_interval,
+                            &mut rmb_interval,
+                        );
                     }
                     Ok(ClickerCommand::Recheck) => {}
                     Ok(ClickerCommand::Shutdown) | Err(_) => return,
@@ -367,8 +400,18 @@ pub mod windows_impl {
                     continue;
                 }
                 Ok(ClickerCommand::ConfigUpdated(new_cfg)) => {
-                    apply_config(&new_cfg, &mut config, &mut target_vk, &mut default_interval, &mut rmb_interval);
-                    scheduler.set_base_interval(current_interval(&state, default_interval, rmb_interval));
+                    apply_config(
+                        &new_cfg,
+                        &mut config,
+                        &mut target_vk,
+                        &mut default_interval,
+                        &mut rmb_interval,
+                    );
+                    scheduler.set_base_interval(current_interval(
+                        &state,
+                        default_interval,
+                        rmb_interval,
+                    ));
                     scheduler.resync_to(Instant::now());
                     continue;
                 }
@@ -385,7 +428,11 @@ pub mod windows_impl {
         }
     }
 
-    fn current_interval(state: &InputState, default_interval: Duration, rmb_interval: Duration) -> Duration {
+    fn current_interval(
+        state: &InputState,
+        default_interval: Duration,
+        rmb_interval: Duration,
+    ) -> Duration {
         if state.rmb_down.load(Ordering::Relaxed) {
             rmb_interval
         } else {

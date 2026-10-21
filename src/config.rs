@@ -177,10 +177,25 @@ pub mod vk {
     pub fn is_modifier_name(upper_name: &str) -> bool {
         matches!(
             upper_name,
-            "CTRL" | "CONTROL" | "LCTRL" | "LCONTROL" | "RCTRL" | "RCONTROL"
-                | "SHIFT" | "LSHIFT" | "RSHIFT"
-                | "ALT" | "MENU" | "LALT" | "LMENU" | "RALT" | "RMENU"
-                | "WIN" | "WINDOWS" | "LWIN" | "RWIN"
+            "CTRL"
+                | "CONTROL"
+                | "LCTRL"
+                | "LCONTROL"
+                | "RCTRL"
+                | "RCONTROL"
+                | "SHIFT"
+                | "LSHIFT"
+                | "RSHIFT"
+                | "ALT"
+                | "MENU"
+                | "LALT"
+                | "LMENU"
+                | "RALT"
+                | "RMENU"
+                | "WIN"
+                | "WINDOWS"
+                | "LWIN"
+                | "RWIN"
         )
     }
 
@@ -226,7 +241,7 @@ pub mod vk {
 /// into individual key-name tokens.
 pub fn parse_hotkey_string(input: &str) -> Vec<String> {
     input
-        .split(|c| c == '+' || c == ',')
+        .split(['+', ','])
         .map(|s| s.trim().to_string())
         .filter(|s| !s.is_empty())
         .collect()
@@ -416,9 +431,13 @@ mod tests {
         ];
         for vk_code in cases {
             let name = vk::name_for(vk_code);
-            let reparsed = vk::from_name(&name).unwrap_or_else(|| panic!("name_for({vk_code:#04x}) = {name:?} didn't reparse"));
+            let reparsed = vk::from_name(&name)
+                .unwrap_or_else(|| panic!("name_for({vk_code:#04x}) = {name:?} didn't reparse"));
             let reparsed_name = vk::name_for(reparsed);
-            assert_eq!(name, reparsed_name, "round trip mismatch for {vk_code:#04x}");
+            assert_eq!(
+                name, reparsed_name,
+                "round trip mismatch for {vk_code:#04x}"
+            );
         }
     }
 
@@ -435,19 +454,33 @@ mod tests {
     #[test]
     fn accepts_default_hotkey() {
         let keys = vec!["Ctrl".to_string(), "W".to_string(), "S".to_string()];
-        assert_eq!(validate_hotkey(&keys), Ok(vec!["CTRL".to_string(), "W".to_string(), "S".to_string()]));
+        assert_eq!(
+            validate_hotkey(&keys),
+            Ok(vec!["CTRL".to_string(), "W".to_string(), "S".to_string()])
+        );
     }
 
     #[test]
     fn rejects_single_key() {
         let keys = vec!["Ctrl".to_string()];
-        assert_eq!(validate_hotkey(&keys), Err(HotkeyValidationError::TooFewKeys));
+        assert_eq!(
+            validate_hotkey(&keys),
+            Err(HotkeyValidationError::TooFewKeys)
+        );
     }
 
     #[test]
     fn rejects_four_keys() {
-        let keys = vec!["Ctrl".to_string(), "Alt".to_string(), "Shift".to_string(), "S".to_string()];
-        assert_eq!(validate_hotkey(&keys), Err(HotkeyValidationError::TooManyKeys));
+        let keys = vec![
+            "Ctrl".to_string(),
+            "Alt".to_string(),
+            "Shift".to_string(),
+            "S".to_string(),
+        ];
+        assert_eq!(
+            validate_hotkey(&keys),
+            Err(HotkeyValidationError::TooManyKeys)
+        );
     }
 
     #[test]
@@ -462,31 +495,46 @@ mod tests {
     #[test]
     fn rejects_combo_without_modifier() {
         let keys = vec!["W".to_string(), "S".to_string()];
-        assert_eq!(validate_hotkey(&keys), Err(HotkeyValidationError::NoModifier));
+        assert_eq!(
+            validate_hotkey(&keys),
+            Err(HotkeyValidationError::NoModifier)
+        );
     }
 
     #[test]
     fn rejects_ctrl_alt_delete() {
         let keys = vec!["Ctrl".to_string(), "Alt".to_string(), "Delete".to_string()];
-        assert!(matches!(validate_hotkey(&keys), Err(HotkeyValidationError::Forbidden(_))));
+        assert!(matches!(
+            validate_hotkey(&keys),
+            Err(HotkeyValidationError::Forbidden(_))
+        ));
     }
 
     #[test]
     fn rejects_win_r() {
         let keys = vec!["Win".to_string(), "R".to_string()];
-        assert!(matches!(validate_hotkey(&keys), Err(HotkeyValidationError::Forbidden(_))));
+        assert!(matches!(
+            validate_hotkey(&keys),
+            Err(HotkeyValidationError::Forbidden(_))
+        ));
     }
 
     #[test]
     fn rejects_alt_f4() {
         let keys = vec!["Alt".to_string(), "F4".to_string()];
-        assert!(matches!(validate_hotkey(&keys), Err(HotkeyValidationError::Forbidden(_))));
+        assert!(matches!(
+            validate_hotkey(&keys),
+            Err(HotkeyValidationError::Forbidden(_))
+        ));
     }
 
     #[test]
     fn rejects_superset_of_blacklisted_combo() {
         let keys = vec!["Ctrl".to_string(), "Alt".to_string(), "Delete".to_string()];
-        assert!(matches!(validate_hotkey(&keys), Err(HotkeyValidationError::Forbidden(_))));
+        assert!(matches!(
+            validate_hotkey(&keys),
+            Err(HotkeyValidationError::Forbidden(_))
+        ));
     }
 
     #[test]
