@@ -8,6 +8,7 @@
 <br>
 **Lightweight Windows auto-presser with drift-free timing, global hotkeys and tray**
 
+[![CI](https://img.shields.io/github/actions/workflow/status/Mahiron-hq/driftless-presser/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/Mahiron-hq/driftless-presser/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/Mahiron-hq/driftless-presser?style=flat-square&color=6aa84f)](https://github.com/Mahiron-hq/driftless-presser/releases/latest)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6?style=flat-square&logo=windows&logoColor=white)](#)
@@ -32,10 +33,10 @@ Driftless Presser автоматически нажимает выбранную
 | | |
 |---|---|
 | ⏱️ **Точный тайминг** | Средняя частота совпадает с заданной с погрешностью < 0.2 мс на дистанции тысяч нажатий |
-| 🎲 **Естественный джиттер** | 10–20 мс случайного разброса на каждое нажатие — ритм не выглядит машинным |
+| 🎲 **Естественный джиттер** | 10–20 мс случайного разброса на каждое нажатие - ритм не выглядит машинным |
 | 🖱️ **Вторая частота под ПКМ** | Пока зажата правая кнопка мыши, используется отдельная частота |
 | ⌨️ **Глобальный хоткей** | Комбинация из 2-3 клавиш вкл/выкл, работает поверх любого активного окна |
-| ⏺️ **Запись клавиш** | Нажмите на поле и просто нажмите нужные клавиши — без ручного ввода имён |
+| ⏺️ **Запись клавиш** | Нажмите на поле и просто нажмите нужные клавиши - без ручного ввода имён |
 | 🛡️ **Защита от опасных комбинаций** | Ctrl+Alt+Delete, Alt+F4, Win+R, Win+L и другие системные сочетания отклоняются |
 | 🌗 **Тёмная тема** | Заголовок окна подхватывает системную тему Windows |
 | 🌐 **Русский и английский** | Язык определяется по локали системы автоматически |
@@ -45,7 +46,7 @@ Driftless Presser автоматически нажимает выбранную
 ### Установка
 
 1. Скачайте `.exe` из [последнего релиза](https://github.com/Mahiron-hq/driftless-presser/releases/latest).
-2. Положите его в отдельную папку — рядом будет создан `config.json`.
+2. Положите его в отдельную папку - рядом будет создан `config.json`.
 3. Запустите. Установка не требуется.
 
 > **SmartScreen.** Сборка не подписана сертификатом, поэтому Windows может показать предупреждение. «Подробнее» → «Выполнить в любом случае». Исходники полностью открыты - при желании соберите сами.
@@ -80,7 +81,7 @@ Driftless Presser автоматически нажимает выбранную
 | `rmb_frequency_hz` | число | Частота нажатий, пока зажата ПКМ |
 | `hotkey` | массив строк | 2-3 клавиши, минимум один модификатор (`Ctrl`, `Alt`, `Shift`, `Win`) |
 
-**Правила хоткея:** от 2 до 3 клавиш, без повторов, обязателен модификатор — иначе комбинация срабатывала бы при обычном наборе текста. Системные сочетания (`Ctrl+Alt+Delete`, `Alt+Tab`, `Win+R`, `Ctrl+Shift+Esc` и другие) заблокированы, включая любые их расширения.
+**Правила хоткея:** от 2 до 3 клавиш, без повторов, обязателен модификатор - иначе комбинация срабатывала бы при обычном наборе текста. Системные сочетания (`Ctrl+Alt+Delete`, `Alt+Tab`, `Win+R`, `Ctrl+Shift+Esc` и другие) заблокированы, включая любые их расширения.
 
 ### Сборка из исходников
 
@@ -122,7 +123,7 @@ Apache License 2.0 - см. [LICENSE](LICENSE).
 
 ## 🇬🇧 English
 
-Driftless Presser repeatedly presses a key of your choice at a configured rate while it's on. One settings window, a tray icon, a single `.exe` — no installer, no background service, no telemetry.
+Driftless Presser repeatedly presses a key of your choice at a configured rate while it's on. One settings window, a tray icon, a single `.exe` - no installer, no background service, no telemetry.
 
 What sets it apart from typical auto-clickers is the **drift-free scheduler**. A naive `sleep(interval + jitter)` loop runs slower than the configured rate and drifts without bound. This one keeps a fixed-step timeline instead: an interval that runs long is repaid by a shorter one, so the average rate stays exactly where you set it.
 
@@ -134,7 +135,7 @@ What sets it apart from typical auto-clickers is the **drift-free scheduler**. A
 | 🎲 **Natural jitter** | 10–20 ms of randomness per press, so the cadence isn't perfectly mechanical |
 | 🖱️ **Second rate on RMB** | A separate frequency applies while the right mouse button is held |
 | ⌨️ **Global hotkey** | 2–3 key toggle combo that works over any focused window |
-| ⏺️ **Press-to-record** | Click a field and press the keys — no typing key names by hand |
+| ⏺️ **Press-to-record** | Click a field and press the keys - no typing key names by hand |
 | 🛡️ **Reserved-combo guard** | Ctrl+Alt+Delete, Alt+F4, Win+R, Win+L and other system shortcuts are rejected |
 | 🌗 **Dark mode** | Title bar follows the Windows system theme |
 | 🌐 **English & Russian** | Language picked automatically from the system locale |
@@ -144,18 +145,18 @@ What sets it apart from typical auto-clickers is the **drift-free scheduler**. A
 ### Install
 
 1. Grab the `.exe` from the [latest release](https://github.com/Mahiron-hq/driftless-presser/releases/latest).
-2. Put it in its own folder — `config.json` is created next to it.
+2. Put it in its own folder - `config.json` is created next to it.
 3. Run it. There's nothing to install.
 
 > **SmartScreen.** The build isn't code-signed, so Windows may warn on first launch. Choose "More info" → "Run anyway". The source is fully open if you'd rather build it yourself.
 
 ### Usage
 
-1. **Target Key** — the key that gets pressed.
-2. **Default Frequency (Hz)** — presses per second in the normal state.
-3. **RMB Frequency (Hz)** — presses per second while the right mouse button is held.
-4. **Toggle Hotkey** — 2–3 keys, at least one modifier.
-5. **Start** — saves your settings and minimises to the tray.
+1. **Target Key** - the key that gets pressed.
+2. **Default Frequency (Hz)** - presses per second in the normal state.
+3. **RMB Frequency (Hz)** - presses per second while the right mouse button is held.
+4. **Toggle Hotkey** - 2–3 keys, at least one modifier.
+5. **Start** - saves your settings and minimises to the tray.
 
 From there the app lives in the tray. The hotkey toggles pressing on and off from anywhere. Right-click the tray icon for "Open Settings" and "Exit".
 
@@ -179,7 +180,7 @@ From there the app lives in the tray. The hotkey toggles pressing on and off fro
 | `rmb_frequency_hz` | number | Presses per second while RMB is held |
 | `hotkey` | string[] | 2–3 keys, at least one modifier (`Ctrl`, `Alt`, `Shift`, `Win`) |
 
-**Hotkey rules:** 2 to 3 keys, no duplicates, at least one modifier — otherwise the combo would fire during ordinary typing. System shortcuts (`Ctrl+Alt+Delete`, `Alt+Tab`, `Win+R`, `Ctrl+Shift+Esc`, and others) are blocked, including any superset of them.
+**Hotkey rules:** 2 to 3 keys, no duplicates, at least one modifier - otherwise the combo would fire during ordinary typing. System shortcuts (`Ctrl+Alt+Delete`, `Alt+Tab`, `Win+R`, `Ctrl+Shift+Esc`, and others) are blocked, including any superset of them.
 
 ### Build from source
 
@@ -201,21 +202,21 @@ cargo test --lib
 
 Three threads with clean boundaries:
 
-- **input-hook** — `WH_KEYBOARD_LL` and `WH_MOUSE_LL` hooks on a dedicated message loop. The callback does as little as possible: Windows drops a hook that's slow to return, stalling input system-wide. The app tags its own `SendInput` output via `dwExtraInfo` so the hook ignores it.
-- **clicker** — scheduling and `SendInput`. Blocks on `recv()` while idle and uses `recv_timeout` while active, so toggling off or an RMB change takes effect immediately instead of waiting out the current interval.
-- **main/GUI** — settings window and tray, built on `native-windows-gui`.
+- **input-hook** - `WH_KEYBOARD_LL` and `WH_MOUSE_LL` hooks on a dedicated message loop. The callback does as little as possible: Windows drops a hook that's slow to return, stalling input system-wide. The app tags its own `SendInput` output via `dwExtraInfo` so the hook ignores it.
+- **clicker** - scheduling and `SendInput`. Blocks on `recv()` while idle and uses `recv_timeout` while active, so toggling off or an RMB change takes effect immediately instead of waiting out the current interval.
+- **main/GUI** - settings window and tray, built on `native-windows-gui`.
 
 Presses are sent as scan codes rather than virtual-key codes, which is what engines like SDL2 expect since it matches real hardware. A 30 ms hold separates down from up: some games sample keyboard state once per frame and would miss an instantaneous pair entirely.
 
 ### Limitations
 
-- Windows 10/11 only — the app relies on Win32 APIs with no cross-platform equivalent (non-Windows builds stop at a `compile_error!`).
+- Windows 10/11 only - the app relies on Win32 APIs with no cross-platform equivalent (non-Windows builds stop at a `compile_error!`).
 - If the target application runs as administrator, run Driftless Presser as administrator too, or Windows will block synthetic input to its window.
-- Anti-cheat systems treat input automation as a violation. Use this in single-player games, in software, and wherever the rules allow it — how you use it is on you.
+- Anti-cheat systems treat input automation as a violation. Use this in single-player games, in software, and wherever the rules allow it - how you use it is on you.
 
 ### License
 
-Apache License 2.0 — see [LICENSE](LICENSE).
+Apache License 2.0 - see [LICENSE](LICENSE).
 
 ---
 

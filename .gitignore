@@ -1,0 +1,12 @@
+/target/
+
+# Created by the app next to the executable.
+config.json
+
+# Editors and OS metadata.
+.idea/
+.vs/
+.vscode/
+*.tmp
+Thumbs.db
+Desktop.ini
